@@ -20,14 +20,34 @@ Scrollkeeper is a **[Tauri 2](https://tauri.app/)** app (Rust backend) with a **
 
 ---
 
-## Requirements
+## Download and run
 
-- **Node.js** (LTS recommended) and **npm**
-- **Rust** and a C++ build toolchain for your OS ([install Rust](https://www.rust-lang.org/tools/install); on Windows, Visual Studio Build Tools are commonly needed for `cargo`)
+Prebuilt installers are published on **[GitHub Releases](https://github.com/AviSchatz/scrollkeeper/releases)** for each version tag (`v*`, e.g. `v1.0.0`).
+
+1. Open the **Releases** page and pick the version you want (or **Latest** when a stable release is published).
+2. Under **Assets**, download the file for your OS:
+
+| OS | File | What to do |
+|----|------|------------|
+| **Windows** | `*.exe` (NSIS setup) | Run the installer and launch **Scrollkeeper** from the Start menu or desktop shortcut. |
+| **macOS** | `*.dmg` | Open the disk image, drag **Scrollkeeper** into **Applications**, then open it from there. |
+| **Linux** | `*.AppImage` | `chmod +x` the file, then run it (double-click or from a terminal). |
+
+**Draft releases:** CI may create a **draft** release first. Drafts are only visible to collaborators until you click **Publish release** on GitHub—then they appear like a normal release for everyone.
+
+**First launch notes**
+
+- **Windows:** SmartScreen may warn on unsigned builds; choose **More info → Run anyway** if you trust the build.
+- **macOS:** If Gatekeeper blocks the app, try **right‑click → Open** on the app in Finder, or allow it in **System Settings → Privacy & Security**.
+- **Linux:** AppImage needs **FUSE** on some distros to run; install your distro’s `fuse` / `libfuse2` package if the image won’t start.
+
+Campaign data is stored on your machine in the app data folder (the in-app footer shows **Data:** with the path).
 
 ---
 
-## Run locally (development)
+## Run from source (development)
+
+For contributors or if you want a live-reload dev build, clone the repo and install **Node.js** (LTS), **npm**, **Rust**, and a **C++ build toolchain** for your OS ([Rust install](https://www.rust-lang.org/tools/install); on Windows, Visual Studio Build Tools are commonly needed for `cargo`).
 
 From the repository root:
 
@@ -36,20 +56,20 @@ npm install
 npm run tauri dev
 ```
 
-This starts the Vite dev server (see `devUrl` in `src-tauri/tauri.conf.json`, default **http://localhost:1422**) and opens the **Scrollkeeper** desktop window. Campaign files are written under the app data directory (exposed in-app in the footer as **Data:** …).
+This starts the Vite dev server (see `devUrl` in `src-tauri/tauri.conf.json`, default **http://localhost:1422**) and opens the **Scrollkeeper** desktop window.
 
-**Web-only dev** (`npm run dev`) is **not** enough for full behavior: persistence uses Tauri `invoke` commands and will not work in a normal browser tab.
+**Web-only** (`npm run dev`) is **not** enough for full behavior: saving campaigns uses Tauri and will not work in a normal browser tab.
 
 ---
 
-## Build a release binary
+## Build a release binary (from source)
 
 ```bash
 npm install
 npm run tauri build
 ```
 
-Installers and bundles appear under `src-tauri/target/release/bundle/` (exact layout depends on OS and Tauri config).
+Installers and bundles appear under `src-tauri/target/release/bundle/` (exact layout depends on OS and Tauri config). Tagged pushes also trigger **[`.github/workflows/release.yml`](.github/workflows/release.yml)**, which builds Windows (`.exe`), macOS (`.dmg`), and Linux (`.AppImage`) and uploads them to a **draft** GitHub Release.
 
 ---
 
