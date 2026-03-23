@@ -1,0 +1,13 @@
+[[permission]]
+identifier = "allow-storage-commands"
+description = "Allows campaign file and app data IPC used by the Scrollkeeper frontend."
+commands.allow = [
+  "get_data_root_path",
+  "list_campaigns",
+  "load_campaign",
+  "save_campaign",
+  "create_campaign",
+  "delete_campaign",
+  "set_active_campaign",
+  "complete_app_close",
+]
