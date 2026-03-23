@@ -4,6 +4,7 @@ A desktop app for **tabletop RPG campaign notes**—built around a single long-f
 
 Scrollkeeper is a **[Tauri 2](https://tauri.app/)** app (Rust backend) with a **React + TypeScript** UI and **[TipTap](https://tiptap.dev/)** for editing.
 
+Very much WIP!
 ---
 
 ## What you can do
