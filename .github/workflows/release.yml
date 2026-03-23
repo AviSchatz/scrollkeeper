@@ -62,8 +62,9 @@ jobs:
       - name: Install frontend dependencies
         run: npm ci
 
+      # Pin to a published release tag (there is no @v1 branch; tags are action-v0.x.y)
       - name: Build and upload to draft release
-        uses: tauri-apps/tauri-action@v1
+        uses: tauri-apps/tauri-action@action-v0.6.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
