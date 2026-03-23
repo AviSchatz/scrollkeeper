@@ -1,0 +1,80 @@
+# Builds Scrollkeeper for Windows (NSIS .exe), macOS (.dmg), and Linux (.AppImage)
+# on each version tag push, uploads bundles to a draft GitHub Release.
+#
+# Before tagging: bump "version" in src-tauri/tauri.conf.json (and optionally package.json)
+# to match your tag, e.g. tag v1.0.0 → version "1.0.0".
+
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  publish:
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: windows-latest
+            args: '--bundles nsis'
+          - platform: macos-latest
+            args: '--target universal-apple-darwin --bundles dmg'
+          - platform: ubuntu-22.04
+            args: '--bundles appimage'
+
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+
+      - name: Install Linux dependencies
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            curl \
+            wget \
+            file \
+            pkg-config \
+            libssl-dev \
+            libwebkit2gtk-4.1-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            patchelf
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Build and upload to draft release
+        uses: tauri-apps/tauri-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: Scrollkeeper ${{ github.ref_name }}
+          releaseBody: |
+            Draft release — review installers below, then publish when ready.
+
+            **Windows:** NSIS setup (`.exe`)  
+            **macOS:** Disk image (`.dmg`, universal Intel + Apple Silicon)  
+            **Linux:** AppImage
+          releaseDraft: true
+          prerelease: false
+          args: ${{ matrix.args }}
